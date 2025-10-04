@@ -1,0 +1,426 @@
+diff --git a/packages/ui/components/dialog/index.tsx b/packages/ui/components/dialog/index.tsx
+new file mode 100644
+index 0000000..b96eade
+--- /dev/null
++++ b/packages/ui/components/dialog/index.tsx
+@@ -0,0 +1,33 @@
++import * as Ariakit from "@ariakit/react";
++import classNames from "classnames";
++import type React from "react";
++import { css } from "../../../../styled-system/css";
++
++const dialog = css({
++  position: "fixed",
++  top: "50vh",
++  left: "50vw",
++  transform: "translate(-50%, -50%)",
++  padding: "s.padding.l",
++  borderRadius: "b.radius.m",
++  backgroundColor: "s.bg.elevated.initial",
++});
++
++interface DialogProps {
++  children: React.ReactNode;
++  isOpen?: boolean;
++  closeButtonContent: React.ReactNode;
++  onClose: () => void;
++}
++
++export const Dialog = ({ children, isOpen = false, onClose }: DialogProps) => {
++  return (
++    <Ariakit.Dialog
++      open={isOpen}
++      onClose={() => onClose()}
++      className={classNames(dialog)}
++    >
++      {children}
++    </Ariakit.Dialog>
++  );
++};
+diff --git a/packages/ui/components/form/input/index.tsx b/packages/ui/components/form/input/index.tsx
+new file mode 100644
+index 0000000..1757ce1
+--- /dev/null
++++ b/packages/ui/components/form/input/index.tsx
+@@ -0,0 +1,50 @@
++import { FormInput, FormLabel, type FormStore } from "@ariakit/react";
++import classNames from "classnames";
++import { css } from "../../../../../styled-system/css";
++import { Stack } from "../../../abstract/stack";
++
++const stack = css({
++  gap: "c.inputContainer.gap",
++});
++
++const inputLabel = css({
++  color: "c.inputLabel.color",
++});
++
++const input = css({
++  padding: "c.input.padding",
++  backgroundColor: "c.input.bg",
++  borderColor: "#0001",
++  borderWidth: "1px",
++  borderRadius: "c.input.radius",
++});
++
++type InputProps<T extends FormStore> = {
++  form: T;
++  name: keyof T["names"];
++  label: string;
++  type?: "input" | "textarea";
++};
++
++export const Input = <T extends FormStore<FormStore["names"]>>({
++  name,
++  label,
++  type = "input",
++}: InputProps<T>) => {
++  return (
++    <Stack className={classNames(stack)}>
++      <FormLabel name={name.toString()} className={classNames(inputLabel)}>
++        {label} :
++      </FormLabel>
++      {type === "input" ? (
++        <FormInput name={name.toString()} className={classNames(input)} />
++      ) : (
++        <FormInput
++          name={name.toString()}
++          className={classNames(input)}
++          render={<textarea />}
++        />
++      )}
++    </Stack>
++  );
++};
+diff --git a/packages/ui/theme/components/form/input/tokens.ts b/packages/ui/theme/components/form/input/tokens.ts
+new file mode 100644
+index 0000000..a5a3b20
+--- /dev/null
++++ b/packages/ui/theme/components/form/input/tokens.ts
+@@ -0,0 +1,45 @@
++import { defineTokens } from "@pandacss/dev";
++import { bg, fg } from "../../../semantic/colors";
++import { radius } from "../../../semantic/radii";
++import { padding } from "../../../semantic/spacings";
++
++// Container
++
++const containerSpacing = defineTokens.spacing({
++	gap: padding.xxs,
++});
++
++export const inputContainer = defineTokens({
++	spacing: containerSpacing,
++});
++
++// Label
++
++const labelColors = defineTokens.colors({
++	color: fg.default.initial,
++});
++
++export const inputLabel = defineTokens({
++	colors: labelColors,
++});
++
++// Input
++
++const inputSpacing = defineTokens.spacing({
++	padding: padding.xs,
++});
++
++const inputColors = defineTokens.colors({
++	bg: bg.default.initial,
++	fg: fg.default.initial,
++});
++
++export const inputRadii = defineTokens.radii({
++	radius: radius.s,
++});
++
++export const input = defineTokens({
++	radii: inputRadii,
++	spacing: inputSpacing,
++	colors: inputColors,
++});
+diff --git a/packages/ui/theme/defaultTheme.ts b/packages/ui/theme/defaultTheme.ts
+index 4fff5f6..009a3e5 100644
+--- a/packages/ui/theme/defaultTheme.ts
++++ b/packages/ui/theme/defaultTheme.ts
+@@ -9,6 +9,11 @@ import {
+ 	documentViewer,
+ 	documentViewerZoom,
+ } from "./components/documentViewer/tokens";
++import {
++	input,
++	inputContainer,
++	inputLabel,
++} from "./components/form/input/tokens";
+ import { header } from "./components/header/tokens";
+ import { sidebar } from "./components/sidebar/tokens";
+ import { snackbar } from "./components/snackBar/tokens";
+@@ -50,6 +55,9 @@ const components = {
+ 	buttonPrimary,
+ 	buttonSecondary,
+ 	snackbar,
++	inputContainer,
++	inputLabel,
++	input,
+ };
+ 
+ const getAllComponentTokens = () => {
+diff --git a/projects/ermewa_ui-vwr/src/presentation/components/email-sender-modal.tsx b/projects/ermewa_ui-vwr/src/presentation/components/email-sender-modal.tsx
+index 2185e86..4b576b0 100644
+--- a/projects/ermewa_ui-vwr/src/presentation/components/email-sender-modal.tsx
++++ b/projects/ermewa_ui-vwr/src/presentation/components/email-sender-modal.tsx
+@@ -1,4 +1,11 @@
+-import { useState } from "react";
++import * as Ariakit from "@ariakit/react";
++
++import { Stack } from "@packages/ui/abstract/stack";
++import { Button } from "@packages/ui/components/button";
++import { Dialog } from "@packages/ui/components/dialog";
++import { Input } from "@packages/ui/components/form/input";
++import classNames from "classnames";
++import { css } from "../../../styled-system/css";
+ import type { EmailInterface } from "../../infrastructure/helpers/send-mail";
+ 
+ interface EmailSenderModalProps {
+@@ -18,78 +25,13 @@ interface EmailSenderModalProps {
+   };
+ }
+ 
+-const modalOverlayStyle: React.CSSProperties = {
+-  position: "fixed",
+-  top: 0,
+-  left: 0,
+-  right: 0,
+-  bottom: 0,
+-  backgroundColor: "rgba(0,0,0,0.5)",
+-  display: "flex",
+-  alignItems: "center",
+-  justifyContent: "center",
+-  zIndex: 9999,
+-  padding: "16px",
+-};
+-
+-const modalContentStyle: React.CSSProperties = {
+-  backgroundColor: "#fff",
+-  borderRadius: "12px",
+-  boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
+-  width: "100%",
+-  maxWidth: "500px",
+-  padding: "24px",
+-  display: "flex",
+-  flexDirection: "column",
+-  maxHeight: "90vh",
+-  overflowY: "auto",
+-};
+-
+-const inputStyle: React.CSSProperties = {
+-  width: "100%",
+-  padding: "8px 12px",
+-  borderRadius: "6px",
+-  border: "1px solid #ccc",
+-  fontSize: "14px",
+-};
+-
+-const textareaStyle: React.CSSProperties = {
+-  ...inputStyle,
+-  resize: "vertical",
+-  minHeight: "80px",
+-};
+-
+-const buttonStyle: React.CSSProperties = {
+-  padding: "8px 16px",
+-  border: "none",
+-  cursor: "pointer",
+-  fontWeight: 500,
+-};
++const formStyle = css({
++  gap: "s.padding.s",
++});
+ 
+-const sendButtonStyle: React.CSSProperties = {
+-  ...buttonStyle,
+-  backgroundColor: "#eeeeee",
+-  color: "#273dff",
+-};
+-
+-const cancelButtonStyle: React.CSSProperties = {
+-  ...buttonStyle,
+-  backgroundColor: "#eee",
+-  color: "#888",
+-  marginRight: "8px",
+-};
+-
+-const formRowStyle: React.CSSProperties = {
+-  display: "flex",
+-  alignItems: "center",
+-  marginBottom: "16px",
+-};
+-
+-const labelStyle: React.CSSProperties = {
+-  width: "80px",
+-  marginRight: "12px",
+-  fontWeight: 500,
+-};
++const buttonsStyle = css({
++  gap: "s.padding.s",
++});
+ 
+ export const EmailSenderModal = ({
+   initialEmail,
+@@ -97,97 +39,69 @@ export const EmailSenderModal = ({
+   onClose,
+   labels,
+ }: EmailSenderModalProps) => {
+-  const [email, setEmail] = useState<EmailInterface>(initialEmail);
++  const form = Ariakit.useFormStore({
++    defaultValues: {
++      from: "",
++      to: "",
++      cc: "",
++      bcc: "",
++      subject: "",
++      message: "",
++    },
++  });
+ 
+-  const handleChange = (
+-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+-  ) => {
+-    const { name, value } = e.currentTarget;
+-    setEmail((prev) => ({ ...prev, [name]: value }));
+-  };
++  form.useSubmit(async (state) => {
++    alert(JSON.stringify(state.values));
++  });
+ 
+   const handleSend = () => {
+-    onSend(email);
++    onSend(form.names.from as unknown as EmailInterface);
+   };
+ 
+   return (
+-    <div style={modalOverlayStyle}>
+-      <div style={modalContentStyle}>
++    <Dialog
++      closeButtonContent={"Cancel"}
++      onClose={() => onClose()}
++      isOpen={true}
++    >
++      <Stack>
+         <h2 style={{ marginBottom: "24px", fontSize: "20px", fontWeight: 600 }}>
+           {labels?.title || "Envoyer un Email"}
+         </h2>
+-        <form>
+-          <div style={formRowStyle}>
+-            <label style={labelStyle}>{labels?.from || "From"}:</label>
+-            <input
+-              type="text"
+-              name="from"
+-              value={email.from}
+-              onChange={handleChange}
+-              style={inputStyle}
+-            />
+-          </div>
+-          <div style={formRowStyle}>
+-            <label style={labelStyle}>{labels?.to || "To"}:</label>
+-            <input
+-              type="text"
+-              name="to"
+-              value={email.to}
+-              onChange={handleChange}
+-              style={inputStyle}
+-            />
+-          </div>
+-          <div style={formRowStyle}>
+-            <label style={labelStyle}>{labels?.cc || "CC"}:</label>
+-            <input
+-              type="text"
+-              name="cc"
+-              value={email.cc || ""}
+-              onChange={handleChange}
+-              style={inputStyle}
+-            />
+-          </div>
+-          <div style={formRowStyle}>
+-            <label style={labelStyle}>{labels?.bcc || "BCC"}:</label>
+-            <input
+-              type="text"
+-              name="bcc"
+-              value={email.bcc || ""}
+-              onChange={handleChange}
+-              style={inputStyle}
+-            />
+-          </div>
+-          <div style={formRowStyle}>
+-            <label style={labelStyle}>{labels?.subject || "Subject"}:</label>
+-            <input
+-              type="text"
+-              name="subject"
+-              value={email.subject}
+-              onChange={handleChange}
+-              style={inputStyle}
+-            />
+-          </div>
+-          <div style={formRowStyle}>
+-            <label style={labelStyle}>{labels?.body || "Message"}:</label>
+-            <textarea
+-              name="text"
+-              value={email.text || ""}
+-              onChange={handleChange}
+-              style={{ ...textareaStyle, flex: 1 }}
+-              maxLength={255}
+-            />
+-          </div>
+-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+-            <button type="button" onClick={onClose} style={cancelButtonStyle}>
+-              {labels?.cancel || "Cancel"}
+-            </button>
+-            <button type="button" onClick={handleSend} style={sendButtonStyle}>
+-              {labels?.send || "Send"}
+-            </button>
+-          </div>
+-        </form>
+-      </div>
+-    </div>
++        <Ariakit.Form
++          store={form}
++          aria-labelledby="send-via-email"
++          // @ts-ignore <The children are already defined by parent component>
++          render={<Stack />}
++          className={classNames(formStyle)}
++        >
++          <Input form={form} name={"from"} label={labels?.from || "From"} />
++          <Input form={form} name={"to"} label={labels?.to || "To"} />
++          <Input form={form} name={"cc"} label={labels?.cc || "CC"} />
++          <Input form={form} name={"bcc"} label={labels?.bcc || "BCC"} />
++          <Input
++            type="textarea"
++            form={form}
++            name={"subject"}
++            label={labels?.subject || "Subject"}
++          />
++          <Input
++            type="textarea"
++            form={form}
++            name={"message"}
++            label={labels?.body || "Message"}
++          />
++          <Stack
++            direction="row"
++            justifyContent="end"
++            className={classNames(buttonsStyle)}
++          >
++            <Button onClick={onClose}>{labels?.cancel || "Cancel"}</Button>
++            <Button onClick={handleSend}>{labels?.send || "Send"}</Button>
++          </Stack>
++        </Ariakit.Form>
++      </Stack>
++    </Dialog>
+   );
+ };
+ 
