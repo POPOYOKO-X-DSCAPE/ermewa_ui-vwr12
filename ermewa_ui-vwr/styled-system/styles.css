@@ -425,6 +425,9 @@
     --colors-c\.button-menu-item-fg-hover: #0023df;
     --colors-c\.snackbar-bg: #fafafa;
     --colors-c\.snackbar-fg: #0b0b0b;
+    --colors-c\.input-label-color: #0b0b0b;
+    --colors-c\.input-bg: #eeeeee;
+    --colors-c\.input-fg: #0b0b0b;
     --spacing-c\.header-padding: 16px;
     --spacing-c\.sidebar-element-gap: 8px;
     --spacing-c\.sidebar-element-padding: 8px;
@@ -442,6 +445,8 @@
     --spacing-c\.button-menu-item-gap: 4px;
     --spacing-c\.snackbar-padding: 20px;
     --spacing-c\.snackbar-margin: 14px;
+    --spacing-c\.input-container-gap: 4px;
+    --spacing-c\.input-padding: 8px;
     --font-sizes-c\.app-h1: 1.4em;
     --font-sizes-c\.app-h2: 1.3em;
     --font-sizes-c\.app-h3: 1.2em;
@@ -460,5 +465,6 @@
     --radii-c\.button-menu-radius: 2px;
     --radii-c\.button-menu-item-radius: 2px;
     --radii-c\.snackbar-radius: 3px;
+    --radii-c\.input-radius: 1px;
 }
 }

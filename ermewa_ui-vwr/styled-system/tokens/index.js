@@ -791,6 +791,18 @@ const tokens = {
     "value": "#0b0b0b",
     "variable": "var(--colors-c\\.snackbar-fg)"
   },
+  "colors.c.inputLabel.color": {
+    "value": "#0b0b0b",
+    "variable": "var(--colors-c\\.input-label-color)"
+  },
+  "colors.c.input.bg": {
+    "value": "#eeeeee",
+    "variable": "var(--colors-c\\.input-bg)"
+  },
+  "colors.c.input.fg": {
+    "value": "#0b0b0b",
+    "variable": "var(--colors-c\\.input-fg)"
+  },
   "spacing.c.header.padding": {
     "value": "16px",
     "variable": "var(--spacing-c\\.header-padding)"
@@ -858,6 +870,14 @@ const tokens = {
   "spacing.c.snackbar.margin": {
     "value": "14px",
     "variable": "var(--spacing-c\\.snackbar-margin)"
+  },
+  "spacing.c.inputContainer.gap": {
+    "value": "4px",
+    "variable": "var(--spacing-c\\.input-container-gap)"
+  },
+  "spacing.c.input.padding": {
+    "value": "8px",
+    "variable": "var(--spacing-c\\.input-padding)"
   },
   "fontSizes.c.app.h1": {
     "value": "1.4em",
@@ -930,6 +950,10 @@ const tokens = {
   "radii.c.snackbar.radius": {
     "value": "3px",
     "variable": "var(--radii-c\\.snackbar-radius)"
+  },
+  "radii.c.input.radius": {
+    "value": "1px",
+    "variable": "var(--radii-c\\.input-radius)"
   },
   "spacing.b.padding.-none": {
     "value": "calc(var(--spacing-b-padding-none) * -1)",
@@ -1126,6 +1150,14 @@ const tokens = {
   "spacing.c.snackbar.-margin": {
     "value": "calc(var(--spacing-c\\.snackbar-margin) * -1)",
     "variable": "var(--spacing-c\\.snackbar-margin)"
+  },
+  "spacing.c.inputContainer.-gap": {
+    "value": "calc(var(--spacing-c\\.input-container-gap) * -1)",
+    "variable": "var(--spacing-c\\.input-container-gap)"
+  },
+  "spacing.c.input.-padding": {
+    "value": "calc(var(--spacing-c\\.input-padding) * -1)",
+    "variable": "var(--spacing-c\\.input-padding)"
   },
   "colors.colorPalette.black": {
     "value": "var(--colors-color-palette-black)",
@@ -1702,6 +1734,10 @@ const tokens = {
   "colors.colorPalette.fg.hover": {
     "value": "var(--colors-color-palette-fg-hover)",
     "variable": "var(--colors-color-palette-fg-hover)"
+  },
+  "colors.colorPalette.color": {
+    "value": "var(--colors-color-palette-color)",
+    "variable": "var(--colors-color-palette-color)"
   }
 }
 
