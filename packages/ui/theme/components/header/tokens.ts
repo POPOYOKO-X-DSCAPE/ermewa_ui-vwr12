@@ -7,8 +7,11 @@ export const colors = defineTokens.colors({
 	fg: fg.elevated.initial,
 });
 
+// Split padding (block/inline) so projects can set asymmetric header bars;
+// defaults keep the previous uniform padding.m.
 export const spacing = defineTokens.spacing({
-	padding: padding.m,
+	paddingBlock: padding.m,
+	paddingInline: padding.m,
 });
 
 export const header = defineTokens({
